@@ -4,7 +4,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 
-service SelfieSale {
+service Acceptance {
 
     // Verification of status of accepting TOS & Privacy Policy
     rpc Check (ProtocolSelector) returns (Verdict) {}
@@ -12,10 +12,16 @@ service SelfieSale {
     // Add new record about TOS & PP was accepted
     rpc Add (Protocol) returns (google.protobuf.Empty) {}
 
-    // Return an actually TOS & PP version
-    rpc Current (google.protobuf.Empty) returns (VersionData) {}
-
 }
+
+service Text {
+    
+    rpc GetByLang (UserLanguages) returns (Src) {}
+
+    // Return an actually TOS & PP version
+    rpc GetCurrentVersionNum (google.protobuf.Empty) returns (Version) {}
+}
+
 
 message ProtocolSelector {
     string id = 1;  // id of a protocol do verification for
@@ -26,7 +32,7 @@ message Verdict {
     string comment = 2;
 }
 
-message VersionData {
+message Version {
     string number = 1;
 }
 
@@ -38,4 +44,16 @@ message Protocol {
     string tos_hash = 5;
     string pp_hash = 6;
     map<string, string> headers = 7;
+}
+
+message UserLanguages {
+    repeated string lang = 1;
+}
+
+message Src {
+    string tos_text = 1;
+    string tos_hash = 2;
+    string pp_text = 3;
+    string pp_hash = 4;
+    string lang = 5;
 }
