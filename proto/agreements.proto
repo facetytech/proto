@@ -1,0 +1,183 @@
+/*Interface for interaction with Legal Agreements system.
+
+This interface provides services for verification user's status of accepting Legal Agreements
+updatind it,  protocolling of accepting it and getting the textes of current Legal Agreements.
+*/
+
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+
+/*Verification and protocolling of accepting Legal Agreements.
+
+The service provide the feature for verification user's status of accepting Legal Agreements
+and protocolling of accepting it.
+
+It contains two methods:
+    - CheckProtocol - for verification of status of accepting Legal Agreements
+    - AddProtocol - for adding new record about Legal Agreements was accepted
+*/
+service Adoption {
+
+
+    /*Verification of status of accepting Legal Aggrements.
+
+    Args:
+        User - contains id of a protocol do verification for and user's data for return actual Legal Agreements.
+
+    Returns:
+        Verdict - contains status of verification(bool), comment (string) and textes of actually Legal Agreements
+        if the user's status of accepting Legal Agreements is not actual
+    */
+    rpc CheckProtocol (User) returns (Verdict) {}
+
+
+    /*Adding a new record about Legal Agreements was accepted.
+
+    Args:
+        Protocol - contains information about:
+            - version, hash and language of Terms Of Services and Privacy Policy;
+            - list of country's remarks (version, hash & country);
+            the user was accepted.
+    
+    Returns:
+        ProtocolSelector - contains id of a protocol was accepted
+    */
+    rpc AddProtocol (Protocol) returns (ProtocolSelector) {}
+
+
+    /*Adding a new record about Country Remark was accepted.
+
+    Args:
+        NewRemark - contains information about:
+            - version, hash and country of Country Remark;
+            - id of a protocol added to.
+    */
+    rpc AddRemark (NewRemark) returns (google.protobuf.Empty) {}
+
+}
+
+
+/*Get the Legal Agreements textes and their versions.
+
+Service find the textes for the current user's country and language.
+*/
+service Receiving {
+    
+    rpc Textes (User) returns (Agreements) {}
+
+}
+
+
+message ProtocolSelector {
+    string id = 1;
+}
+
+// New remark and protocol id for adding to
+message NewRemark {
+    string id = 1;
+    NewRemark remark = 2;
+}
+
+// Contains status of verification(bool) and comment (string) of current version of Terms Of Services
+message TosVerdict {
+    bool status = 1;
+    string comment = 2;
+}
+// Contains status of verification(bool) and comment (string) of current version of Privacy Policy
+message PpVerdict {
+    bool status = 1;
+    string comment = 2;
+}
+// Contains status of verification(bool) and comment (string) of current version of Country Remark
+message RemarkVerdict {
+    bool status = 1;
+    string comment = 2;
+}
+
+// Aggregated verdict of verification of current version of Terms Of Services, Privacy Policy and Country Remark
+message Verdict {
+    TosVerdict tos = 1;
+    PpVerdict pp = 2;
+    RemarkVerdict remark = 3;
+    Agreements agreements = 4;
+}
+
+message Version {
+    string number = 1;
+}
+
+
+
+// Contains information about the user and his device at the moment of accepting Legal Agreements
+
+// The data about accepted Terms Of Services
+message TosLog {
+    string version = 1;
+    string hash = 2;
+    string language = 3;
+    google.protobuf.Timestamp timestamp = 4;
+}
+// The data about accepted Privacy Policy
+message PpLog {
+    string version = 1;
+    string hash = 2;
+    string language = 3;
+    google.protobuf.Timestamp timestamp = 4;
+}
+// The data about accepted Country Remark
+message RemarkLog {
+    string version = 1;
+    string hash = 2;
+    string country = 3;
+    google.protobuf.Timestamp timestamp = 4;
+}
+
+// Contains information about accepted Legal Agreements
+message Protocol {
+    TosLog tos = 1;
+    PpLog pp = 2;
+    repeated RemarkLog remark = 3;
+    map<string, string> headers = 4;
+    // id of a protocol was accepted before
+    string previously = 5;
+}
+
+// Defines the data where is the current user from and their protocol ID.
+message User {
+    // Accepted protocol ID
+    string protocol = 1;
+    // User's language list
+    repeated string lang = 2;
+    // Current user's country
+    string country = 3;
+}
+
+
+// Contains Terms of Service, Privacy Policy and Country Remark textes and their hashes
+
+message TosText {
+    string text = 1;
+    string version = 2;
+    string hash = 3;
+    string language = 4;
+}
+message PpText {
+    string text = 1;
+    string version = 2;
+    string hash = 3;
+    string language = 4;
+}
+message RemarkText {
+    string text = 1;
+    string version = 2;
+    string hash = 3;
+}
+
+message Agreements {
+    TosText tos = 1;
+    PpText pp = 2;
+    RemarkText remark = 3;
+}
