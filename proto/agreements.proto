@@ -1,7 +1,7 @@
 /*Interface for interaction with Legal Agreements system.
 
 This interface provides services for verification user's status of accepting Legal Agreements
-updatind it,  protocolling of accepting it and getting the textes of current Legal Agreements.
+updating it,  logging of accepting it and getting the texts of current Legal Agreements.
 */
 
 syntax = "proto3";
@@ -10,10 +10,10 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 
-/*Verification and protocolling of accepting Legal Agreements.
+/*Verification and logging of accepting Legal Agreements.
 
 The service provide the feature for verification user's status of accepting Legal Agreements
-and protocolling of accepting it.
+and logging of accepting it.
 
 It contains two methods:
     - CheckProtocol - for verification of status of accepting Legal Agreements
@@ -22,13 +22,13 @@ It contains two methods:
 service Adoption {
 
 
-    /*Verification of status of accepting Legal Aggrements.
+    /*Verification of status of accepting Legal Agreements.
 
     Args:
         User - contains id of a protocol do verification for and user's data for return actual Legal Agreements.
 
     Returns:
-        Verdict - contains status of verification(bool), comment (string) and textes of actually Legal Agreements
+        Verdict - contains status of verification(bool), comment (string) and texts of actually Legal Agreements
         if the user's status of accepting Legal Agreements is not actual
     */
     rpc CheckProtocol (User) returns (Verdict) {}
@@ -60,13 +60,13 @@ service Adoption {
 }
 
 
-/*Get the Legal Agreements textes and their versions.
+/*Get the Legal Agreements texts and their versions.
 
-Service find the textes for the current user's country and language.
+Service find the texts for the current user's country and language.
 */
 service Receiving {
     
-    rpc Textes (User) returns (Agreements) {}
+    rpc Texts (User) returns (Agreements) {}
 
 }
 
@@ -156,7 +156,7 @@ message User {
 }
 
 
-// Contains Terms of Service, Privacy Policy and Country Remark textes and their hashes
+// Contains Terms of Service, Privacy Policy and Country Remark texts and their hashes
 
 message TosText {
     string text = 1;
