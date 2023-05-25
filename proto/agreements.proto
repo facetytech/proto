@@ -25,13 +25,13 @@ service Adoption {
     /*Verification of status of accepting Legal Agreements.
 
     Args:
-        User - contains id of a protocol do verification for and user's data for return actual Legal Agreements.
+        Selector - contains id of a protocol was accepted
 
     Returns:
         Verdict - contains status of verification(bool), comment (string) and texts of actually Legal Agreements
         if the user's status of accepting Legal Agreements is not actual
     */
-    rpc CheckProtocol (User) returns (Verdict) {}
+    rpc CheckProtocol (Selector) returns (Verdict) {}
 
 
     /*Adding a new record about Legal Agreements was accepted.
@@ -43,19 +43,19 @@ service Adoption {
             the user was accepted.
     
     Returns:
-        ProtocolSelector - contains id of a protocol was accepted
+        Selector - contains id of a protocol was accepted
     */
-    rpc AddProtocol (Protocol) returns (ProtocolSelector) {}
+    rpc AddProtocol (Protocol) returns (Selector) {}
 
 
     /*Adding a new record about Country Remark was accepted.
 
     Args:
-        NewRemark - contains information about:
+        Remark - contains information about:
             - version, hash and country of Country Remark;
             - id of a protocol added to.
     */
-    rpc AddRemark (NewRemark) returns (google.protobuf.Empty) {}
+    rpc AddRemark (Remark) returns (google.protobuf.Empty) {}
 
 }
 
@@ -71,37 +71,37 @@ service Receiving {
 }
 
 
-message ProtocolSelector {
+message Selector {
     string id = 1;
 }
 
 // New remark and protocol id for adding to
-message NewRemark {
+message Remark {
     string id = 1;
-    NewRemark remark = 2;
+    ProtocolRemark remark = 2;
 }
 
 // Contains status of verification(bool) and comment (string) of current version of Terms Of Services
-message TosVerdict {
+message VerdictTos {
     bool status = 1;
     string comment = 2;
 }
 // Contains status of verification(bool) and comment (string) of current version of Privacy Policy
-message PpVerdict {
+message VerdictPp {
     bool status = 1;
     string comment = 2;
 }
 // Contains status of verification(bool) and comment (string) of current version of Country Remark
-message RemarkVerdict {
+message VerdictRemark {
     bool status = 1;
     string comment = 2;
 }
 
 // Aggregated verdict of verification of current version of Terms Of Services, Privacy Policy and Country Remark
 message Verdict {
-    TosVerdict tos = 1;
-    PpVerdict pp = 2;
-    RemarkVerdict remark = 3;
+    VerdictTos tos = 1;
+    VerdictPp pp = 2;
+    VerdictRemark remark = 3;
     Agreements agreements = 4;
 }
 
@@ -114,21 +114,21 @@ message Version {
 // Contains information about the user and his device at the moment of accepting Legal Agreements
 
 // The data about accepted Terms Of Services
-message TosLog {
+message ProtocolTos {
     string version = 1;
     string hash = 2;
-    string language = 3;
+    string lang = 3;
     google.protobuf.Timestamp timestamp = 4;
 }
 // The data about accepted Privacy Policy
-message PpLog {
+message ProtocolPp {
     string version = 1;
     string hash = 2;
-    string language = 3;
+    string lang = 3;
     google.protobuf.Timestamp timestamp = 4;
 }
 // The data about accepted Country Remark
-message RemarkLog {
+message ProtocolRemark {
     string version = 1;
     string hash = 2;
     string country = 3;
@@ -137,9 +137,9 @@ message RemarkLog {
 
 // Contains information about accepted Legal Agreements
 message Protocol {
-    TosLog tos = 1;
-    PpLog pp = 2;
-    repeated RemarkLog remark = 3;
+    ProtocolTos tos = 1;
+    ProtocolPp pp = 2;
+    repeated ProtocolRemark remarks = 3;
     map<string, string> headers = 4;
     // id of a protocol was accepted before
     string previously = 5;
@@ -150,7 +150,7 @@ message User {
     // Accepted protocol ID
     string protocol = 1;
     // User's language list
-    repeated string lang = 2;
+    repeated string langs = 2;
     // Current user's country
     string country = 3;
 }
@@ -158,26 +158,26 @@ message User {
 
 // Contains Terms of Service, Privacy Policy and Country Remark texts and their hashes
 
-message TosText {
+message AgreementsTos {
     string text = 1;
     string version = 2;
     string hash = 3;
-    string language = 4;
+    string lang = 4;
 }
-message PpText {
+message AgreementsPp {
     string text = 1;
     string version = 2;
     string hash = 3;
-    string language = 4;
+    string lang = 4;
 }
-message RemarkText {
+message AgreementsRemark {
     string text = 1;
     string version = 2;
     string hash = 3;
 }
 
 message Agreements {
-    TosText tos = 1;
-    PpText pp = 2;
-    RemarkText remark = 3;
+    AgreementsTos tos = 1;
+    AgreementsPp pp = 2;
+    repeated AgreementsRemark remarks = 3;
 }
