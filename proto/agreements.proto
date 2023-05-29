@@ -15,9 +15,10 @@ import "google/protobuf/timestamp.proto";
 The service provide the feature for verification user's status of accepting Legal Agreements
 and logging of accepting it.
 
-It contains two methods:
+It contains three methods:
     - CheckProtocol - for verification of status of accepting Legal Agreements
     - AddProtocol - for adding new record about Legal Agreements was accepted
+    - AddRemark - for adding new record about Country Remark was accepted
 */
 service Adoption {
 
@@ -51,11 +52,11 @@ service Adoption {
     /*Adding a new record about Country Remark was accepted.
 
     Args:
-        Remark - contains information about:
-            - version, hash and country of Country Remark;
-            - id of a protocol added to.
+        NewRemark - contains information about:
+            - remark contains Country Remark object;
+            - owner is ID of a protocol added to.
     */
-    rpc AddRemark (Remark) returns (google.protobuf.Empty) {}
+    rpc AddRemark (NewRemark) returns (google.protobuf.Empty) {}
 
 }
 
@@ -76,108 +77,119 @@ message Selector {
 }
 
 // New remark and protocol id for adding to
-message Remark {
-    string id = 1;
-    ProtocolRemark remark = 2;
+message NewRemark {
+    string owner = 1;
+    Protocol.Remark remark = 2;
 }
 
-// Contains status of verification(bool) and comment (string) of current version of Terms Of Services
-message VerdictTos {
-    bool status = 1;
-    string comment = 2;
-}
-// Contains status of verification(bool) and comment (string) of current version of Privacy Policy
-message VerdictPp {
-    bool status = 1;
-    string comment = 2;
-}
-// Contains status of verification(bool) and comment (string) of current version of Country Remark
-message VerdictRemark {
-    bool status = 1;
-    string comment = 2;
-}
 
 // Aggregated verdict of verification of current version of Terms Of Services, Privacy Policy and Country Remark
 message Verdict {
-    VerdictTos tos = 1;
-    VerdictPp pp = 2;
-    VerdictRemark remark = 3;
+
+    // Contains status of verification(bool) and comment (string) of current version of Terms Of Services
+    message Tos {
+        bool status = 1;
+        string comment = 2;
+    }
+    Tos tos = 1;
+    
+    // Contains status of verification(bool) and comment (string) of current version of Privacy Policy
+    message Pp {
+        bool status = 1;
+        string comment = 2;
+    }
+    Pp pp = 2;
+    
+    // Contains status of verification(bool) and comment (string) of current version of Country Remark
+    message Remark {
+        bool status = 1;
+        string comment = 2;
+    }
+    Remark remark = 3;
+    
     Agreements agreements = 4;
 }
 
-message Version {
-    string number = 1;
-}
-
-
-
-// Contains information about the user and his device at the moment of accepting Legal Agreements
-
-// The data about accepted Terms Of Services
-message ProtocolTos {
-    string version = 1;
-    string hash = 2;
-    string lang = 3;
-    google.protobuf.Timestamp timestamp = 4;
-}
-// The data about accepted Privacy Policy
-message ProtocolPp {
-    string version = 1;
-    string hash = 2;
-    string lang = 3;
-    google.protobuf.Timestamp timestamp = 4;
-}
-// The data about accepted Country Remark
-message ProtocolRemark {
-    string version = 1;
-    string hash = 2;
-    string country = 3;
-    google.protobuf.Timestamp timestamp = 4;
-}
 
 // Contains information about accepted Legal Agreements
 message Protocol {
-    ProtocolTos tos = 1;
-    ProtocolPp pp = 2;
-    repeated ProtocolRemark remarks = 3;
-    map<string, string> headers = 4;
+
+    // The data about accepted Terms Of Services
+    message Tos {
+        string version = 1;
+        string hash = 2;
+        string lang = 3;
+        google.protobuf.Timestamp timestamp = 4;
+    }
+    Tos tos = 1;
+
+    // The data about accepted Privacy Policy
+    message Pp {
+        string version = 1;
+        string hash = 2;
+        string lang = 3;
+        google.protobuf.Timestamp timestamp = 4;
+    }
+    Pp pp = 2;
+
+    // The data about accepted Country Remark
+    message Remark {
+        string version = 1;
+        string hash = 2;
+        string country = 3;
+        google.protobuf.Timestamp timestamp = 4;
+    }
+    repeated Remark remarks = 3;
+
+    // Contains information about the user and his device at the moment of accepting Legal Agreements
+    message Header {
+        string key = 1;
+        string value = 2;
+    }
+    repeated Header headers = 4;
+
     // id of a protocol was accepted before
     string previously = 5;
 }
 
 // Defines the data where is the current user from and their protocol ID.
 message User {
+
     // Accepted protocol ID
     string protocol = 1;
+
     // User's language list
     repeated string langs = 2;
+
     // Current user's country
     string country = 3;
 }
 
 
 // Contains Terms of Service, Privacy Policy and Country Remark texts and their hashes
-
-message AgreementsTos {
-    string text = 1;
-    string version = 2;
-    string hash = 3;
-    string lang = 4;
-}
-message AgreementsPp {
-    string text = 1;
-    string version = 2;
-    string hash = 3;
-    string lang = 4;
-}
-message AgreementsRemark {
-    string text = 1;
-    string version = 2;
-    string hash = 3;
-}
-
 message Agreements {
-    AgreementsTos tos = 1;
-    AgreementsPp pp = 2;
-    repeated AgreementsRemark remarks = 3;
+
+    message Tos {
+        string text = 1;
+        string version = 2;
+        string hash = 3;
+        string lang = 4;
+    }
+    Tos tos = 1;
+    
+    message Pp {
+        string text = 1;
+        string version = 2;
+        string hash = 3;
+        string lang = 4;
+    }
+    Pp pp = 2;
+
+    message Remark {
+        string text = 1;
+        string version = 2;
+        string hash = 3;
+    }
+    repeated Remark remarks = 3;
+
 }
